@@ -1,0 +1,27 @@
+% Thai PDF support for Pandoc
+\usepackage{fontspec}
+\usepackage{polyglossia}
+
+\setmainlanguage{thai}
+\setotherlanguage{english}
+
+% ลอง TH Sarabun New ก่อน ถ้าไม่มีให้ fallback ไป Noto Sans Thai
+\IfFontExistsTF{TH Sarabun New}{
+  \setmainfont{TH Sarabun New}[
+    Scale=1.2
+  ]
+}{
+  \setmainfont{Noto Sans Thai}
+}
+
+% Line spacing สำหรับภาษาไทย
+\usepackage{setspace}
+\setstretch{1.5}
+
+% Margin
+\usepackage[
+  top=2.5cm,
+  bottom=2.5cm,
+  left=3cm,
+  right=2.5cm
+]{geometry}
