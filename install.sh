@@ -173,6 +173,7 @@ fi
 mkdir -p "\$FOLDER/papers"
 cp "$PSF_TEMPLATES/cv_background.md" "\$FOLDER/"
 cp "$PSF_TEMPLATES/teaching_cases.md" "\$FOLDER/"
+cp "$HERMES_HOME/AGENTS.md" "\$FOLDER/"
 echo "✓ สร้าง folder '\$FOLDER' พร้อมใช้งาน"
 echo ""
 echo "ขั้นตอนต่อไป:"
