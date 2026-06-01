@@ -18,8 +18,21 @@ warn() { echo -e "${YELLOW}⚠ $*${NC}"; }
 err()  { echo -e "${RED}✗ $*${NC}"; exit 1; }
 info() { echo -e "  $*"; }
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 HERMES_HOME="${HERMES_HOME:-$HOME/.hermes}"
+REPO_URL="https://github.com/datakruroo/th_psf_assistant.git"
+
+# --- ถ้ารันผ่าน curl | bash จะไม่มี BASH_SOURCE ให้ clone repo ก่อน ---
+if [ -n "${BASH_SOURCE[0]:-}" ] && [ "${BASH_SOURCE[0]}" != "bash" ] && [ -f "${BASH_SOURCE[0]}" ]; then
+    SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+else
+    # รันผ่าน curl | bash — clone repo ลงใน temp folder
+    TMP_REPO="$(mktemp -d)"
+    info "กำลังดาวน์โหลดไฟล์ระบบ..."
+    git clone --depth 1 "$REPO_URL" "$TMP_REPO" 2>/dev/null || \
+        err "ดาวน์โหลดไม่สำเร็จ — กรุณาตรวจสอบ internet connection"
+    SCRIPT_DIR="$TMP_REPO"
+    ok "ดาวน์โหลดเสร็จแล้ว"
+fi
 
 # =============================================================================
 echo ""
