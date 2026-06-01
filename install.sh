@@ -45,15 +45,15 @@ echo ""
 # =============================================================================
 echo -e "${BOLD}[1/5] Hermes Agent${NC}"
 
-if command -v hermes &>/dev/null; then
-    ok "Hermes Agent พร้อมใช้งานแล้ว ($(hermes --version 2>/dev/null || echo 'installed'))"
+if hermes --version &>/dev/null; then
+    ok "Hermes Agent พร้อมใช้งานแล้ว ($(hermes --version 2>/dev/null))"
 else
     info "กำลังติดตั้ง Hermes Agent..."
     curl -fsSL \
       https://raw.githubusercontent.com/NousResearch/hermes-agent/main/scripts/install.sh \
       | bash
     export PATH="$HOME/.local/bin:$PATH"
-    command -v hermes &>/dev/null || err "ติดตั้ง Hermes ไม่สำเร็จ — กรุณาตรวจสอบ internet connection"
+    hermes --version &>/dev/null || err "ติดตั้ง Hermes ไม่สำเร็จ — กรุณาตรวจสอบ internet connection"
     ok "ติดตั้ง Hermes Agent เสร็จแล้ว"
 fi
 
