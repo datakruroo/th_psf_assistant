@@ -92,6 +92,11 @@ mkdir -p "$SKILLS_DIR"
 cp -r "$SCRIPT_DIR/skills/psf-writer/." "$SKILLS_DIR/"
 ok "psf-writer skill → $SKILLS_DIR"
 
+REVISER_DIR="$HERMES_HOME/skills/psf-reviser"
+mkdir -p "$REVISER_DIR"
+cp -r "$SCRIPT_DIR/skills/psf-reviser/." "$REVISER_DIR/"
+ok "psf-reviser skill → $REVISER_DIR"
+
 # =============================================================================
 # 4. ติดตั้ง Pandoc assets → ~/.hermes/
 # =============================================================================

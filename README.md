@@ -170,13 +170,4 @@ th_psf_assistant/
 
 ## License
 
-This project is available for non-commercial use only under the PolyForm Noncommercial License 1.0.0￼.
-
-You may use, modify, and distribute this project for personal, educational, and research purposes.
-Commercial use, including use in paid services, products, consulting work, or other revenue-generating activities, is not permitted without prior written permission from the author.
-
-For commial licensing inquiries, please contact the author.
-
-
-
 MIT
