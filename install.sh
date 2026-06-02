@@ -87,6 +87,9 @@ fi
 echo ""
 echo -e "${BOLD}[3/5] PSF Skill${NC}"
 
+# ลบ skill เวอร์ชันเก่าที่อาจค้างอยู่
+rm -rf "$HERMES_HOME/skills/psf-reviser"
+
 SKILLS_DIR="$HERMES_HOME/skills/psf-writer"
 mkdir -p "$SKILLS_DIR"
 cp -r "$SCRIPT_DIR/skills/psf-writer/." "$SKILLS_DIR/"
