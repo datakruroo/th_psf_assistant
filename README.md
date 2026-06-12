@@ -13,15 +13,21 @@
 → Docker sandbox 1 sandbox
 ```
 
-ตัวอย่าง folder ที่ใช้งานได้:
+ตัวอย่างการสร้าง case ที่ใช้งานได้:
 
-```text
-PSF-2026-001
-PSF-2026-001_somchai
-psf_2026_001_somchai
+```bash
+psf-new siwachoat
+psf-new PSF-2026-001
+psf-new PSF-2026-001_somchai
 ```
 
-ระบบจะอ่านเลข case หลักเป็น canonical case ID:
+ถ้าใส่แค่ชื่อ เช่น `psf-new siwachoat` ระบบจะหาเลขถัดไปของปีปัจจุบันให้อัตโนมัติ แล้วสร้าง folder ตามรูปแบบ:
+
+```text
+PSF-2026-001_siwachoat
+```
+
+ระบบจะอ่านเลข case หลักเป็น canonical case ID เสมอ:
 
 ```text
 folder:  PSF-2026-001_somchai
@@ -106,15 +112,22 @@ curl -fsSL https://raw.githubusercontent.com/datakruroo/th_psf_assistant/main/in
 
 ### 1. สร้าง case folder
 
-ใช้เลข case อย่างเดียว:
+วิธีที่แนะนำสำหรับผู้ใช้ทั่วไปคือใส่แค่ชื่อหรือชื่อย่อ:
+
+```bash
+psf-new siwachoat
+```
+
+ระบบจะออกเลข case ถัดไปให้อัตโนมัติ เช่น:
+
+```text
+PSF-2026-001_siwachoat
+```
+
+ถ้าต้องการกำหนดเลขเองก็ยังทำได้:
 
 ```bash
 psf-new PSF-2026-001
-```
-
-หรือใส่ชื่ออาจารย์ต่อท้ายเพื่อจำง่าย:
-
-```bash
 psf-new PSF-2026-001_somchai
 ```
 
@@ -183,7 +196,8 @@ psf-open PSF-2026-001
 
 | Command | หน้าที่ |
 |---|---|
-| `psf-new PSF-2026-001_somchai` | สร้าง case folder, copy input templates, clone Hermes profile จาก `psf-template`, generate Docker config |
+| `psf-new siwachoat` | สร้าง case folder โดยออกเลขถัดไปให้อัตโนมัติ เช่น `PSF-2026-001_siwachoat` |
+| `psf-new PSF-2026-001_somchai` | สร้าง case folder ด้วยเลขที่กำหนดเอง, copy input templates, clone Hermes profile จาก `psf-template`, generate Docker config |
 | `psf-open PSF-2026-001_somchai` | เปิด Hermes profile ของ case นั้น พร้อมตรวจ Docker |
 | `psf-list` | แสดง case ID, folder name, สถานะ folder/profile, จำนวนไฟล์ input และ deliverables |
 | `psf-close PSF-2026-001_somchai` | หยุด Docker sandbox ของ case นั้น ไม่ลบไฟล์ |
@@ -266,25 +280,25 @@ workflow เดิม:
 2. สร้าง case folder:
 
 ```bash
-psf-new PSF-2026-001_somchai
+psf-new siwachoat
 ```
 
 3. ย้ายไฟล์เดิมเข้า:
 
 ```text
-cases/PSF-2026-001_somchai/input/
+cases/PSF-2026-001_siwachoat/input/
 ```
 
 4. ถ้ามี draft เดิม ให้ย้ายเข้า:
 
 ```text
-cases/PSF-2026-001_somchai/workspace/
+cases/PSF-2026-001_siwachoat/workspace/
 ```
 
 5. เปิดใช้งาน:
 
 ```bash
-psf-open PSF-2026-001_somchai
+psf-open PSF-2026-001_siwachoat
 ```
 
 ไม่ควร copy Hermes memory/session เดิมเข้ามา เว้นแต่ตั้งใจจริงว่าต้องการใช้ประวัติเดิมต่อ

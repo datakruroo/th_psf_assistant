@@ -11,18 +11,28 @@ else
 fi
 
 usage() {
-    printf 'Usage: psf-new PSF-YYYY-NNN\n' >&2
+    printf 'Usage: psf-new NAME | PSF-YYYY-NNN[_NAME]\n' >&2
+    printf 'Examples:\n' >&2
+    printf '  psf-new siwachoat\n' >&2
+    printf '  psf-new PSF-2026-001_siwachoat\n' >&2
 }
 
 [ "$#" -eq 1 ] || { usage; exit 2; }
 
-CASE_ID="$1"
-psf_validate_case_id "$CASE_ID"
+REQUEST="$1"
 psf_require_command hermes
 
-CANONICAL_CASE_ID="$(psf_canonical_case_id "$CASE_ID")"
-CASE_DIR="$(psf_case_dir_for_new "$CASE_ID")"
-PROFILE="$(psf_profile_for_case "$CASE_ID")"
+if CANONICAL_CASE_ID="$(psf_canonical_case_id "$REQUEST" 2>/dev/null)"; then
+    CASE_FOLDER_NAME="$REQUEST"
+else
+    SUFFIX="$(psf_slugify_case_suffix "$REQUEST")"
+    CASE_YEAR="${PSF_CASE_YEAR:-$(date +%Y)}"
+    CANONICAL_CASE_ID="$(psf_next_available_case_id "$CASE_YEAR")"
+    CASE_FOLDER_NAME="${CANONICAL_CASE_ID}_${SUFFIX}"
+fi
+
+CASE_DIR="$(psf_case_dir_for_new "$CASE_FOLDER_NAME")"
+PROFILE="$(psf_profile_for_case "$CANONICAL_CASE_ID")"
 TEMPLATE_PROFILE="$(psf_template_profile)"
 TEMPLATE_DIR="$(psf_input_template_dir)"
 
@@ -83,8 +93,9 @@ psf_sync_profile_support_files "$PROFILE"
 psf_write_profile_docker_config "$PROFILE" "$CANONICAL_CASE_ID" "$CASE_DIR"
 
 trap - EXIT
-printf 'Created case %s\n' "$CASE_ID"
+printf 'Created case %s\n' "$CANONICAL_CASE_ID"
+printf 'Folder name: %s\n' "$CASE_FOLDER_NAME"
 printf 'Case folder: %s\n' "$CASE_DIR"
 printf 'Hermes profile: %s\n' "$PROFILE"
 printf '\nNext step:\n'
-printf '  psf-open %s\n' "$CASE_ID"
+printf '  psf-open %s\n' "$CASE_FOLDER_NAME"

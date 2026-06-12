@@ -56,6 +56,74 @@ psf_validate_case_id() {
     psf_canonical_case_id "$1" >/dev/null
 }
 
+psf_slugify_case_suffix() {
+    local raw="${1:-}"
+    if [ -z "$raw" ]; then
+        psf_err "case name cannot be empty"
+        return 1
+    fi
+    case "$raw" in
+        */*|.*|*..*)
+            psf_err "invalid case name '$raw'. Do not use path separators, leading dots, or '..'."
+            return 1
+            ;;
+    esac
+
+    local suffix
+    suffix="$(
+        printf '%s' "$raw" \
+            | tr '[:upper:]' '[:lower:]' \
+            | sed -E 's/[[:space:]]+/_/g; s/[^[:alnum:]_.-]+/_/g; s/_+/_/g; s/^[_.-]+//; s/[_.-]+$//'
+    )"
+    if [ -z "$suffix" ]; then
+        psf_err "case name '$raw' did not contain usable characters"
+        return 1
+    fi
+    printf '%s\n' "$suffix"
+}
+
+psf_next_case_number_for_year() {
+    local year="$1"
+    local cases_dir max=0 entry base canonical number
+    cases_dir="$(psf_root)/cases"
+
+    if [ -d "$cases_dir" ]; then
+        for entry in "$cases_dir"/*; do
+            [ -d "$entry" ] || continue
+            base="$(basename "$entry")"
+            canonical="$(psf_canonical_case_id "$base" 2>/dev/null || true)"
+            case "$canonical" in
+                PSF-"$year"-[0-9][0-9][0-9])
+                    number="${canonical##*-}"
+                    number=$((10#$number))
+                    if [ "$number" -gt "$max" ]; then
+                        max="$number"
+                    fi
+                    ;;
+            esac
+        done
+    fi
+
+    printf '%03d\n' "$((max + 1))"
+}
+
+psf_next_available_case_id() {
+    local year="$1"
+    local number canonical profile case_dir
+    number="$(psf_next_case_number_for_year "$year")"
+
+    while :; do
+        canonical="$(printf 'PSF-%s-%03d' "$year" "$((10#$number))")"
+        profile="$(psf_profile_for_case "$canonical")"
+        case_dir="$(psf_case_dir "$canonical" 2>/dev/null || true)"
+        if { [ -z "$case_dir" ] || [ ! -d "$case_dir" ]; } && ! psf_profile_exists "$profile"; then
+            printf '%s\n' "$canonical"
+            return 0
+        fi
+        number="$(printf '%03d' "$((10#$number + 1))")"
+    done
+}
+
 psf_profile_for_case() {
     psf_canonical_case_id "$1" | tr '[:upper:]' '[:lower:]'
 }

@@ -11,6 +11,7 @@ export PSF_ROOT="$HOME/Documents/psf-assistant"
 export PSF_SHARED="$HERMES_HOME/psf-shared"
 export PSF_INSTALL_SKIP_SETUP=1
 export PSF_INSTALL_SKIP_DOCKER_BUILD=1
+export PSF_CASE_YEAR=2026
 export PATH="$TMP_DIR/fakebin:$ROOT_DIR/bin:$PATH"
 
 mkdir -p "$TMP_DIR/fakebin" "$HOME" "$HERMES_HOME" "$PSF_SHARED/templates"
@@ -232,7 +233,6 @@ assert_not_contains "$CONFIG1" "$HOME:/"
 assert_not_contains "$CONFIG1" "$HOME/Documents:/"
 
 expect_fail psf-new PSF-2026-001
-expect_fail psf-new Somchai
 
 psf-new PSF-2026-002 >/tmp/psf-smoke-new2.out
 assert_not_contains "$CONFIG1" "PSF-2026-002"
@@ -248,10 +248,20 @@ assert_contains "$CONFIG3" "$CASE3/input:/input:ro"
 assert_contains "$CONFIG3" "psf.case_id=PSF-2026-003"
 expect_fail psf-new PSF-2026-003
 
+psf-new siwachoat >/tmp/psf-smoke-auto.out
+CASE4="$PSF_ROOT/cases/PSF-2026-004_siwachoat"
+PROFILE4="$HERMES_HOME/profiles/psf-2026-004"
+CONFIG4="$PROFILE4/config.yaml"
+assert_dir "$CASE4"
+assert_dir "$PROFILE4"
+assert_contains "$CONFIG4" "$CASE4/input:/input:ro"
+assert_contains "$CONFIG4" "psf.case_id=PSF-2026-004"
+
 printf 'Somchai Example\n' >> "$CASE1/input/cv_background.md"
 LIST_OUT="$(psf-list)"
 printf '%s\n' "$LIST_OUT" | grep -q "PSF-2026-001" || fail "psf-list did not show case ID"
 printf '%s\n' "$LIST_OUT" | grep -q "psf_2026_003_somchai" || fail "psf-list did not show friendly folder name"
+printf '%s\n' "$LIST_OUT" | grep -q "PSF-2026-004_siwachoat" || fail "psf-list did not show auto-generated folder name"
 printf '%s\n' "$LIST_OUT" | grep -q "Somchai" && fail "psf-list leaked real-name content"
 
 PSF_FAKE_DOCKER_DOWN=1 expect_fail psf-open PSF-2026-001
