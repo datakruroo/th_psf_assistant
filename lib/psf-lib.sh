@@ -170,6 +170,95 @@ psf_case_dir() {
     printf '%s\n' "$cases_dir/$ref"
 }
 
+psf_resolve_case_ref() {
+    local ref="${1:-}"
+    local cases_dir
+    cases_dir="$(psf_root)/cases"
+
+    if [ -z "$ref" ]; then
+        psf_err "case reference cannot be empty"
+        return 1
+    fi
+
+    case "$ref" in
+        */*|.*|*..*)
+            psf_err "invalid case reference '$ref'. Do not use path separators, leading dots, or '..'."
+            return 1
+            ;;
+    esac
+
+    if canonical="$(psf_canonical_case_id "$ref" 2>/dev/null)"; then
+        local dir
+        dir="$(psf_case_dir "$ref")" || return 1
+        if [ ! -d "$dir" ]; then
+            psf_err "case folder does not exist: $dir"
+            return 1
+        fi
+        printf '%s\t%s\t%s\n' "$canonical" "$dir" "$(basename "$dir")"
+        return 0
+    fi
+
+    local query matches=() entry base lower_base lower_query canonical
+    query="$(psf_slugify_case_suffix "$ref")" || return 1
+    lower_query="$(printf '%s' "$query" | tr '[:upper:]' '[:lower:]')"
+
+    if [ -d "$cases_dir" ]; then
+        for entry in "$cases_dir"/*; do
+            [ -d "$entry" ] || continue
+            base="$(basename "$entry")"
+            canonical="$(psf_canonical_case_id "$base" 2>/dev/null || true)"
+            [ -n "$canonical" ] || continue
+            lower_base="$(printf '%s' "$base" | tr '[:upper:]' '[:lower:]')"
+            case "$lower_base" in
+                *"$lower_query"*)
+                    matches+=("$canonical"$'\t'"$entry"$'\t'"$base")
+                    ;;
+            esac
+        done
+    fi
+
+    case "${#matches[@]}" in
+        0)
+            psf_err "no case folder matches '$ref'"
+            return 1
+            ;;
+        1)
+            printf '%s\n' "${matches[0]}"
+            return 0
+            ;;
+    esac
+
+    if [ ! -t 0 ]; then
+        psf_err "multiple case folders match '$ref'; run interactively or use the exact folder name"
+        local i=1
+        for match in "${matches[@]}"; do
+            IFS=$'\t' read -r canonical _dir base <<< "$match"
+            printf '  %d. %s (%s)\n' "$i" "$base" "$canonical" >&2
+            i=$((i + 1))
+        done
+        return 1
+    fi
+
+    printf 'Multiple case folders match "%s":\n' "$ref" >&2
+    local i=1
+    for match in "${matches[@]}"; do
+        IFS=$'\t' read -r canonical _dir base <<< "$match"
+        printf '  %d. %s (%s)\n' "$i" "$base" "$canonical" >&2
+        i=$((i + 1))
+    done
+
+    local choice
+    while :; do
+        printf 'Select case number: ' >&2
+        read -r choice
+        if [[ "$choice" =~ ^[0-9]+$ ]] && [ "$choice" -ge 1 ] && [ "$choice" -le "${#matches[@]}" ]; then
+            printf '%s\n' "${matches[$((choice - 1))]}"
+            return 0
+        fi
+        printf 'Invalid selection.\n' >&2
+    done
+}
+
 psf_require_command() {
     command -v "$1" >/dev/null 2>&1 || {
         psf_err "required command '$1' was not found in PATH"

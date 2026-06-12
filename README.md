@@ -164,7 +164,15 @@ input/papers/
 
 ### 3. เปิด Hermes ของ case นั้น
 
-เปิดด้วย folder name เต็ม:
+เปิดด้วยชื่อหรือชื่อย่อได้:
+
+```bash
+psf-open siwachoat
+```
+
+ถ้ามีหลาย case ที่ match คำว่า `siwachoat` ระบบจะแสดงรายการให้เลือกก่อนเข้าสู่ Hermes
+
+เปิดด้วย folder name เต็มก็ได้:
 
 ```bash
 psf-open PSF-2026-001_somchai
@@ -198,10 +206,11 @@ psf-open PSF-2026-001
 |---|---|
 | `psf-new siwachoat` | สร้าง case folder โดยออกเลขถัดไปให้อัตโนมัติ เช่น `PSF-2026-001_siwachoat` |
 | `psf-new PSF-2026-001_somchai` | สร้าง case folder ด้วยเลขที่กำหนดเอง, copy input templates, clone Hermes profile จาก `psf-template`, generate Docker config |
-| `psf-open PSF-2026-001_somchai` | เปิด Hermes profile ของ case นั้น พร้อมตรวจ Docker |
+| `psf-open siwachoat` | ค้น case ที่มีคำว่า `siwachoat` แล้วเปิด Hermes profile ของ case นั้น ถ้าพบหลาย case จะให้เลือก |
+| `psf-open PSF-2026-001_somchai` | เปิด Hermes profile ด้วย folder name เต็ม |
 | `psf-list` | แสดง case ID, folder name, สถานะ folder/profile, จำนวนไฟล์ input และ deliverables |
-| `psf-close PSF-2026-001_somchai` | หยุด Docker sandbox ของ case นั้น ไม่ลบไฟล์ |
-| `psf-delete-profile PSF-2026-001_somchai` | ลบ Hermes profile/session/memory/log ของ case นั้น แต่ไม่ลบ case folder |
+| `psf-close siwachoat` | หยุด Docker sandbox ของ case นั้น ไม่ลบไฟล์ |
+| `psf-delete-profile siwachoat` | ลบ Hermes profile/session/memory/log ของ case นั้น แต่ไม่ลบ case folder |
 
 ลบ profile แบบ automation:
 
@@ -298,7 +307,7 @@ cases/PSF-2026-001_siwachoat/workspace/
 5. เปิดใช้งาน:
 
 ```bash
-psf-open PSF-2026-001_siwachoat
+psf-open siwachoat
 ```
 
 ไม่ควร copy Hermes memory/session เดิมเข้ามา เว้นแต่ตั้งใจจริงว่าต้องการใช้ประวัติเดิมต่อ

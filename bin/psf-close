@@ -11,17 +11,18 @@ else
 fi
 
 usage() {
-    printf 'Usage: psf-close PSF-YYYY-NNN\n' >&2
+    printf 'Usage: psf-close NAME | PSF-YYYY-NNN[_NAME]\n' >&2
 }
 
 [ "$#" -eq 1 ] || { usage; exit 2; }
 
-CASE_ID="$1"
-psf_validate_case_id "$CASE_ID"
+CASE_REF="$1"
 psf_require_command hermes
 psf_check_docker_ready
 
-PROFILE="$(psf_profile_for_case "$CASE_ID")"
+RESOLVED="$(psf_resolve_case_ref "$CASE_REF")"
+IFS=$'\t' read -r CANONICAL_CASE_ID _CASE_DIR CASE_FOLDER_NAME <<< "$RESOLVED"
+PROFILE="$(psf_profile_for_case "$CANONICAL_CASE_ID")"
 if ! psf_profile_exists "$PROFILE"; then
     psf_err "Hermes profile does not exist: $PROFILE"
     exit 1
@@ -32,18 +33,18 @@ hermes -p "$PROFILE" gateway stop >/dev/null 2>&1 || true
 ids="$(
     {
         docker ps -q --filter "label=psf.profile=$PROFILE"
-        docker ps -q --filter "label=psf.case_id=$CASE_ID"
+        docker ps -q --filter "label=psf.case_id=$CANONICAL_CASE_ID"
         docker ps -q --filter "name=$PROFILE"
     } | sort -u
 )"
 
 if [ -z "$ids" ]; then
-    printf 'No running Docker sandbox found for %s (%s).\n' "$CASE_ID" "$PROFILE"
+    printf 'No running Docker sandbox found for %s (%s, %s).\n' "$CASE_FOLDER_NAME" "$CANONICAL_CASE_ID" "$PROFILE"
     printf 'No case files, workspace drafts, or deliverables were deleted.\n'
     exit 0
 fi
 
 # shellcheck disable=SC2086
 docker stop $ids >/dev/null
-printf 'Stopped Docker sandbox for %s (%s).\n' "$CASE_ID" "$PROFILE"
+printf 'Stopped Docker sandbox for %s (%s, %s).\n' "$CASE_FOLDER_NAME" "$CANONICAL_CASE_ID" "$PROFILE"
 printf 'No case files, workspace drafts, or deliverables were deleted.\n'
