@@ -96,6 +96,7 @@ mkdir -p \
     "$PSF_ROOT/cases" \
     "$PSF_ROOT/private-admin" \
     "$PSF_SHARED/assets" \
+    "$PSF_SHARED/assets/scripts" \
     "$PSF_SHARED/context" \
     "$PSF_SHARED/templates" \
     "$HERMES_HOME/skills"
@@ -130,9 +131,18 @@ ok "PSF skills installed"
 
 cp "$SCRIPT_DIR/pandoc/psf_template.docx" "$PSF_SHARED/assets/psf_template.docx"
 cp "$SCRIPT_DIR/pandoc/thai_pdf.tex" "$PSF_SHARED/assets/thai_pdf.tex"
+cp "$SCRIPT_DIR/scripts/count_thai_words.py" "$PSF_SHARED/assets/scripts/count_thai_words.py"
 cp -R "$SCRIPT_DIR/context/." "$PSF_SHARED/context/"
 cp "$SCRIPT_DIR/AGENTS.md" "$PSF_SHARED/AGENTS.md"
 ok "Shared assets/context installed read-only source"
+
+if command -v python3 >/dev/null 2>&1; then
+    if python3 -c 'import pythainlp' >/dev/null 2>&1; then
+        ok "PyThaiNLP is available for host-side word count checks"
+    else
+        warn "PyThaiNLP is not installed on the host. Install with: python3 -m pip install pythainlp"
+    fi
+fi
 
 cat > "$PSF_SHARED/templates/cv_background.md" <<'TMPL'
 # ข้อมูลส่วนตัวและประวัติ

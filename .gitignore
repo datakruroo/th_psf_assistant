@@ -11,3 +11,5 @@ private-admin/
 outputs/
 deliverables/
 workspace/
+!scripts/
+!scripts/*.py

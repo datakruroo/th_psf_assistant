@@ -14,3 +14,5 @@ RUN apt-get update \
         texlive-xetex \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
+
+RUN python -m pip install --no-cache-dir pythainlp
