@@ -1,0 +1,49 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+if [ -f "$SCRIPT_DIR/../lib/psf-lib.sh" ]; then
+    # shellcheck source=../lib/psf-lib.sh
+    source "$SCRIPT_DIR/../lib/psf-lib.sh"
+else
+    # shellcheck source=/dev/null
+    source "${PSF_LIB:-$HOME/.local/lib/psf-assistant/psf-lib.sh}"
+fi
+
+usage() {
+    printf 'Usage: psf-close PSF-YYYY-NNN\n' >&2
+}
+
+[ "$#" -eq 1 ] || { usage; exit 2; }
+
+CASE_ID="$1"
+psf_validate_case_id "$CASE_ID"
+psf_require_command hermes
+psf_check_docker_ready
+
+PROFILE="$(psf_profile_for_case "$CASE_ID")"
+if ! psf_profile_exists "$PROFILE"; then
+    psf_err "Hermes profile does not exist: $PROFILE"
+    exit 1
+fi
+
+hermes -p "$PROFILE" gateway stop >/dev/null 2>&1 || true
+
+ids="$(
+    {
+        docker ps -q --filter "label=psf.profile=$PROFILE"
+        docker ps -q --filter "label=psf.case_id=$CASE_ID"
+        docker ps -q --filter "name=$PROFILE"
+    } | sort -u
+)"
+
+if [ -z "$ids" ]; then
+    printf 'No running Docker sandbox found for %s (%s).\n' "$CASE_ID" "$PROFILE"
+    printf 'No case files, workspace drafts, or deliverables were deleted.\n'
+    exit 0
+fi
+
+# shellcheck disable=SC2086
+docker stop $ids >/dev/null
+printf 'Stopped Docker sandbox for %s (%s).\n' "$CASE_ID" "$PROFILE"
+printf 'No case files, workspace drafts, or deliverables were deleted.\n'

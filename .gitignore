@@ -3,3 +3,11 @@ __pycache__/
 *.pyc
 .DS_Store
 .env
+cases/
+private-admin/
+*.log
+*.sqlite
+*.db
+outputs/
+deliverables/
+workspace/

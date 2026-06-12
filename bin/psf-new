@@ -1,0 +1,90 @@
+#!/usr/bin/env bash
+set -Eeuo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+if [ -f "$SCRIPT_DIR/../lib/psf-lib.sh" ]; then
+    # shellcheck source=../lib/psf-lib.sh
+    source "$SCRIPT_DIR/../lib/psf-lib.sh"
+else
+    # shellcheck source=/dev/null
+    source "${PSF_LIB:-$HOME/.local/lib/psf-assistant/psf-lib.sh}"
+fi
+
+usage() {
+    printf 'Usage: psf-new PSF-YYYY-NNN\n' >&2
+}
+
+[ "$#" -eq 1 ] || { usage; exit 2; }
+
+CASE_ID="$1"
+psf_validate_case_id "$CASE_ID"
+psf_require_command hermes
+
+CANONICAL_CASE_ID="$(psf_canonical_case_id "$CASE_ID")"
+CASE_DIR="$(psf_case_dir_for_new "$CASE_ID")"
+PROFILE="$(psf_profile_for_case "$CASE_ID")"
+TEMPLATE_PROFILE="$(psf_template_profile)"
+TEMPLATE_DIR="$(psf_input_template_dir)"
+
+if [ -e "$CASE_DIR" ]; then
+    psf_err "case folder already exists: $CASE_DIR"
+    exit 1
+fi
+
+EXISTING_CASE_DIR="$(psf_case_dir "$CANONICAL_CASE_ID")"
+if [ -d "$EXISTING_CASE_DIR" ]; then
+    psf_err "case ID already has a folder: $EXISTING_CASE_DIR"
+    exit 1
+fi
+
+if psf_profile_exists "$PROFILE"; then
+    psf_err "Hermes profile already exists: $PROFILE"
+    exit 1
+fi
+
+if ! psf_profile_exists "$TEMPLATE_PROFILE"; then
+    psf_err "template profile '$TEMPLATE_PROFILE' does not exist. Re-run install.sh first."
+    exit 1
+fi
+
+psf_check_docker_ready
+
+CREATED_CASE=0
+CREATED_PROFILE=0
+rollback() {
+    local status=$?
+    if [ "$status" -ne 0 ]; then
+        psf_err "case creation failed; rolling back partial changes"
+        if [ "$CREATED_PROFILE" -eq 1 ]; then
+            hermes profile delete "$PROFILE" -y >/dev/null 2>&1 || true
+        fi
+        if [ "$CREATED_CASE" -eq 1 ]; then
+            rm -rf "$CASE_DIR"
+        fi
+    fi
+    exit "$status"
+}
+trap rollback EXIT
+
+mkdir -p "$CASE_DIR/input/papers" "$CASE_DIR/workspace" "$CASE_DIR/deliverables"
+CREATED_CASE=1
+
+cp "$TEMPLATE_DIR/cv_background.md" "$CASE_DIR/input/cv_background.md"
+cp "$TEMPLATE_DIR/teaching_cases.md" "$CASE_DIR/input/teaching_cases.md"
+if [ -f "$(psf_shared_root)/AGENTS.md" ]; then
+    cp "$(psf_shared_root)/AGENTS.md" "$CASE_DIR/workspace/AGENTS.md"
+fi
+
+hermes profile create "$PROFILE" --clone --clone-from "$TEMPLATE_PROFILE" --no-alias \
+    --description "Thailand-PSF case profile for $CANONICAL_CASE_ID."
+CREATED_PROFILE=1
+
+psf_sync_profile_support_files "$PROFILE"
+psf_write_profile_docker_config "$PROFILE" "$CANONICAL_CASE_ID" "$CASE_DIR"
+
+trap - EXIT
+printf 'Created case %s\n' "$CASE_ID"
+printf 'Case folder: %s\n' "$CASE_DIR"
+printf 'Hermes profile: %s\n' "$PROFILE"
+printf '\nNext step:\n'
+printf '  psf-open %s\n' "$CASE_ID"

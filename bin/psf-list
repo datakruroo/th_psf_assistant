@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+if [ -f "$SCRIPT_DIR/../lib/psf-lib.sh" ]; then
+    # shellcheck source=../lib/psf-lib.sh
+    source "$SCRIPT_DIR/../lib/psf-lib.sh"
+else
+    # shellcheck source=/dev/null
+    source "${PSF_LIB:-$HOME/.local/lib/psf-assistant/psf-lib.sh}"
+fi
+
+psf_require_command hermes
+
+CASES_DIR="$(psf_root)/cases"
+
+printf '%-14s %-28s %-10s %-10s %-12s %-15s\n' "CASE ID" "FOLDER NAME" "FOLDER" "PROFILE" "INPUT FILES" "DELIVERABLES"
+
+if [ ! -d "$CASES_DIR" ]; then
+    exit 0
+fi
+
+found=0
+for case_path in "$CASES_DIR"/*; do
+    [ -d "$case_path" ] || continue
+    found=1
+    folder_name="$(basename "$case_path")"
+    case_id="$(psf_canonical_case_id "$folder_name" 2>/dev/null || true)"
+    [ -n "$case_id" ] || continue
+    profile="$(psf_profile_for_case "$case_id")"
+    folder_status="ok"
+    profile_status="missing"
+    if psf_profile_exists "$profile"; then
+        profile_status="ok"
+    fi
+    input_count="$(psf_count_files "$case_path/input")"
+    deliverable_count="$(psf_count_files "$case_path/deliverables")"
+    printf '%-14s %-28s %-10s %-10s %-12s %-15s\n' "$case_id" "$folder_name" "$folder_status" "$profile_status" "$input_count" "$deliverable_count"
+done
+
+[ "$found" -eq 1 ] || true

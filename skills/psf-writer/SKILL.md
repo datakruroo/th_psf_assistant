@@ -15,21 +15,32 @@ metadata:
 ## ขั้นตอนที่ 0: ตรวจสอบสถานะ folder
 
 โหลด context ก่อนเสมอ:
-- `~/.hermes/context/psf_guidelines.md`
-- `~/.hermes/context/thpsf_framework.md`
+- `/psf-context/psf_guidelines.md`
+- `/psf-context/thpsf_framework.md`
 
-จากนั้นตรวจ working directory แล้วเลือก path ตามลำดับต่อไปนี้:
+ใช้ path ภายใน sandbox เท่านั้น:
+- input ต้นฉบับ: `/input/cv_background.md`, `/input/teaching_cases.md`, `/input/papers/` (อ่านอย่างเดียว)
+- working copy: `/workspace/cv_background_working.md`, `/workspace/teaching_cases_working.md`
+- draft: `/workspace/PSF_part2.md`, `/workspace/PSF_part3.md`
+- deliverables: `/deliverables/PSF_Application.docx`, `/deliverables/PSF_Application.pdf`
+- assets: `/assets/psf_template.docx`, `/assets/thai_pdf.tex`
 
-**A — มี `PSF_review.md`**
+ห้ามเขียนทับไฟล์ใน `/input` ทุกกรณี ถ้าต้องบันทึกข้อมูลใหม่จากการสนทนาให้เขียนลง `/workspace/*_working.md`
+
+จากนั้นตรวจ `/workspace` และ `/input` แล้วเลือก path ตามลำดับต่อไปนี้:
+
+**A — มี `/workspace/PSF_review.md`**
 > "พบผลการตรวจจาก /psf-reviewer ครับ ระบบจะอ่านและขอ confirm ทีละจุดก่อนแก้ไข พร้อมดำเนินการได้เลยมั้ยครับ?"
 
 รอ confirm → ไป **ขั้นตอนที่ 4**
 
-**B — มี `cv_background.md` และ `teaching_cases.md` ครบแล้ว**
+**B — มี working copy หรือ input ครบแล้ว**
+
+ใช้ `/workspace/cv_background_working.md` และ `/workspace/teaching_cases_working.md` ถ้ามีอยู่แล้ว มิฉะนั้นอ่านจาก `/input/cv_background.md` และ `/input/teaching_cases.md`
 
 ไป **ขั้นตอนที่ 1** ทันที ไม่ต้องถาม intake ซ้ำ
 
-**C — มีไฟล์ `.md` อื่น ๆ ที่ไม่ใช่ไฟล์ระบบ**
+**C — มีไฟล์ `.md` อื่น ๆ ใน `/workspace` ที่ไม่ใช่ไฟล์ระบบ**
 
 > "พบไฟล์ [ชื่อไฟล์] ในโฟลเดอร์ครับ ดูเหมือนอาจารย์เตรียมข้อมูลมาแล้ว จะอ่านและจัดเรียงลงระบบให้เลยมั้ยครับ?"
 
@@ -43,14 +54,14 @@ metadata:
 
 ## ขั้นตอนที่ 0a: แปลงไฟล์จากแหล่งอื่น
 
-อ่านไฟล์ `.md` ทุกตัวที่ผู้ใช้เตรียมมา (เช่น จาก ChatGPT หรือเครื่องมืออื่น)
+อ่านไฟล์ `.md` ทุกตัวใน `/workspace` ที่ผู้ใช้เตรียมมา (เช่น จาก ChatGPT หรือเครื่องมืออื่น)
 
 1. **สกัดข้อมูล** จากไฟล์ทั้งหมด แบ่งเป็น:
    - ข้อมูลส่วนตัว / ประวัติการศึกษา / ภาระงานสอน
    - ข้อมูลกรณีศึกษา 4 ด้าน (ต่อกรณี)
    - หลักฐานที่ระบุไว้และสถานะของแต่ละชิ้น
 
-2. **จัดเรียงลงใน template** โดยใช้โครงสร้างเดียวกับ `~/.hermes/templates/cv_background.md` และ `~/.hermes/templates/teaching_cases.md`
+2. **จัดเรียงลงใน working copy** โดยใช้โครงสร้างเดียวกับ `/input/cv_background.md` และ `/input/teaching_cases.md`
    - ข้อมูลที่สกัดได้ชัดเจน → บันทึกลงช่องที่ตรงกันทันที
    - ข้อมูลที่คลุมเครือ → ใส่ไว้พร้อม comment `<!-- ตรวจสอบ: ... -->`
 
@@ -60,7 +71,7 @@ metadata:
    > ข้อมูลที่ยังไม่ชัดเจน [N] รายการ จะระบุไว้ใน comment ให้อาจารย์เติมทีหลังได้ครับ
    > บันทึกได้เลยมั้ยครับ?"
 
-4. บันทึกเป็น `cv_background.md` และ `teaching_cases.md` → ไป **ขั้นตอนที่ 1**
+4. บันทึกเป็น `/workspace/cv_background_working.md` และ `/workspace/teaching_cases_working.md` → ไป **ขั้นตอนที่ 1**
 
 ---
 
@@ -101,7 +112,7 @@ metadata:
 
 **บันทึกและยืนยัน**
 
-บันทึกลง `cv_background.md` และ `teaching_cases.md` แจ้งอาจารย์ตรวจสอบ รอ confirm → ไป **ขั้นตอนที่ 1**
+บันทึกลง `/workspace/cv_background_working.md` และ `/workspace/teaching_cases_working.md` แจ้งอาจารย์ตรวจสอบ รอ confirm → ไป **ขั้นตอนที่ 1**
 
 ---
 
@@ -115,16 +126,18 @@ metadata:
 | 2 | ~3,000 คำ | สอนดี + ช่วยเพื่อนอาจารย์ + นวัตกรรม + self-evaluation |
 | 3 | ~5,000 คำ | สอนดี + วิจัยในชั้นเรียน + นวัตกรรมการประเมิน + impact ระดับหลักสูตร + ผู้นำวิชาชีพ |
 
-สร้างไฟล์จาก `~/.hermes/skills/psf-writer/PSF_structure.md`:
-- `PSF_part2.md`
-- `PSF_part3.md`
+สร้างไฟล์ตามโครงสร้าง PSF 5 ส่วน:
+- `/workspace/PSF_part2.md`
+- `/workspace/PSF_part3.md`
 
 ทดสอบ pandoc:
 ```bash
-pandoc PSF_part3.md -o PSF_part3.docx --reference-doc=$HOME/.hermes/psf_template.docx
+pandoc /workspace/PSF_part3.md \
+  -o /deliverables/PSF_part3.docx \
+  --reference-doc=/assets/psf_template.docx
 ```
 
-**Evidence Pre-check** — อ่าน `teaching_cases.md` และแสดงสรุปให้อาจารย์เห็นก่อนเขียน:
+**Evidence Pre-check** — อ่าน `/workspace/teaching_cases_working.md` ถ้ามี มิฉะนั้นอ่าน `/input/teaching_cases.md` และแสดงสรุปให้อาจารย์เห็นก่อนเขียน:
 
 ```
 📋 Evidence Pre-check
@@ -146,8 +159,8 @@ pandoc PSF_part3.md -o PSF_part3.docx --reference-doc=$HOME/.hermes/psf_template
 
 ## ขั้นตอนที่ 2: เขียน Part 2 (ประวัติตนเอง)
 
-1. อ่าน `cv_background.md`
-2. เขียน `PSF_part2.md` ครอบคลุม: คุณวุฒิการศึกษาเรียงจากสูงสุด / ประสบการณ์สอนและพัฒนาวิชาชีพ / ตารางภาระงานสอน 3 ปีล่าสุด ความยาวรวมไม่เกิน 1 หน้า A4
+1. อ่าน `/workspace/cv_background_working.md` ถ้ามี มิฉะนั้นอ่าน `/input/cv_background.md`
+2. เขียน `/workspace/PSF_part2.md` ครอบคลุม: คุณวุฒิการศึกษาเรียงจากสูงสุด / ประสบการณ์สอนและพัฒนาวิชาชีพ / ตารางภาระงานสอน 3 ปีล่าสุด ความยาวรวมไม่เกิน 1 หน้า A4
 3. Render → แจ้งอาจารย์ตรวจสอบ → รอ approve ก่อนไปต่อ
 
 ---
@@ -156,7 +169,7 @@ pandoc PSF_part3.md -o PSF_part3.docx --reference-doc=$HOME/.hermes/psf_template
 
 ### 3a. วิเคราะห์ก่อนเขียน
 
-อ่าน `teaching_cases.md` แล้ว mapping:
+อ่าน `/workspace/teaching_cases_working.md` ถ้ามี มิฉะนั้นอ่าน `/input/teaching_cases.md` แล้ว mapping:
 - dimension ร/ส/ค ที่เกี่ยวข้องกับแต่ละด้าน
 - educational principles ที่สนับสนุน
 - evidence ที่มีในไฟล์
@@ -173,7 +186,7 @@ pandoc PSF_part3.md -o PSF_part3.docx --reference-doc=$HOME/.hermes/psf_template
 **กฎที่ต้องทำทุกระดับ:**
 - ทุก claim มี **(ร x.x.x)** / **(ส x.x.x)** / **(ค x.x.x)** กำกับ
 - Educational principles กระจายในเนื้อหา ไม่แยก section
-- ใช้เฉพาะข้อมูลใน `teaching_cases.md` ห้ามแต่งเพิ่ม
+- ใช้เฉพาะข้อมูลใน `/workspace/teaching_cases_working.md` หรือ `/input/teaching_cases.md` ห้ามแต่งเพิ่ม
 - เขียน first person ("ข้าพเจ้า...")
 - ต้องมี limitation อย่างน้อย 1 จุดต่อกรณีศึกษา
 - **กฎ: method ≠ evidence** — อธิบายว่าใช้เครื่องมืออะไรไม่ใช่หลักฐาน หลักฐานคือสิ่งที่ค้นพบจากการใช้เครื่องมือนั้น
@@ -195,22 +208,24 @@ pandoc PSF_part3.md -o PSF_part3.docx --reference-doc=$HOME/.hermes/psf_template
 ### 3c. Render และ approve
 
 ```bash
-pandoc PSF_part3.md -o PSF_part3.docx --reference-doc=$HOME/.hermes/psf_template.docx
+pandoc /workspace/PSF_part3.md \
+  -o /deliverables/PSF_part3.docx \
+  --reference-doc=/assets/psf_template.docx
 ```
 
 รอ approve กรณีที่ 1 ก่อนเขียนกรณีที่ 2 แล้วทำ 3a–3c ซ้ำสำหรับกรณีที่ 2
 
 ### 3d. ส่วนค่านิยม (ค 3.1 / ค 3.2)
 
-เพิ่มส่วนท้าย `PSF_part3.md` ด้วยเนื้อหาการพัฒนาตนเองและจรรยาบรรณ อ่านจากส่วนการพัฒนาวิชาชีพใน `teaching_cases.md` Render → รอ approve
+เพิ่มส่วนท้าย `/workspace/PSF_part3.md` ด้วยเนื้อหาการพัฒนาตนเองและจรรยาบรรณ อ่านจากส่วนการพัฒนาวิชาชีพใน working copy หรือ input Render → รอ approve
 
 ---
 
-## ขั้นตอนที่ 4: Revision Mode (ใช้เมื่อมี PSF_review.md)
+## ขั้นตอนที่ 4: Revision Mode (ใช้เมื่อมี `/workspace/PSF_review.md`)
 
 ### 4a. อ่านและสรุป review
 
-อ่าน `PSF_review.md` ทั้งหมด แล้วแจ้งอาจารย์:
+อ่าน `/workspace/PSF_review.md` ทั้งหมด แล้วแจ้งอาจารย์:
 
 > "ผลการตรวจมีข้อเสนอแนะทั้งหมด [N] จุดครับ:
 > **Part 2:** [รายการ] **Part 3:** [รายการ]
@@ -221,7 +236,7 @@ pandoc PSF_part3.md -o PSF_part3.docx --reference-doc=$HOME/.hermes/psf_template
 สำหรับแต่ละข้อใน review:
 
 > "**จุดที่ [N]:** [สรุปปัญหา]
-> reviewer แนะนำให้ปรับเป็น: [ตัวอย่างจาก PSF_review.md]
+> reviewer แนะนำให้ปรับเป็น: [ตัวอย่างจาก /workspace/PSF_review.md]
 > อาจารย์ยอมรับการแก้ไขนี้มั้ยครับ? (ใช่ / ไม่ / แก้เองแล้ว)"
 
 รอคำตอบก่อนไปจุดถัดไปทุกครั้ง
@@ -232,15 +247,17 @@ pandoc PSF_part3.md -o PSF_part3.docx --reference-doc=$HOME/.hermes/psf_template
 
 1. ตรวจ version ล่าสุด:
 ```bash
-ls PSF_part3_v*.md 2>/dev/null | sort -V | tail -1
-ls PSF_part2_v*.md 2>/dev/null | sort -V | tail -1
+ls /workspace/PSF_part3_v*.md 2>/dev/null | sort -V | tail -1
+ls /workspace/PSF_part2_v*.md 2>/dev/null | sort -V | tail -1
 ```
 
-2. เขียนเฉพาะจุดที่ approve บันทึกเป็น `PSF_part2_v[N].md` / `PSF_part3_v[N].md` **ห้ามแตะต้นฉบับและ version ก่อนหน้า**
+2. เขียนเฉพาะจุดที่ approve บันทึกเป็น `/workspace/PSF_part2_v[N].md` / `/workspace/PSF_part3_v[N].md` **ห้ามแตะต้นฉบับและ version ก่อนหน้า**
 
 3. Render:
 ```bash
-pandoc PSF_part3_v[N].md -o PSF_part3_v[N].docx --reference-doc=$HOME/.hermes/psf_template.docx
+pandoc /workspace/PSF_part3_v[N].md \
+  -o /deliverables/PSF_part3_v[N].docx \
+  --reference-doc=/assets/psf_template.docx
 ```
 
 4. แสดง diff summary:
@@ -254,17 +271,19 @@ pandoc PSF_part3_v[N].md -o PSF_part3_v[N].docx --reference-doc=$HOME/.hermes/ps
 ## ขั้นตอนที่ 5: Export สุดท้าย
 
 ```bash
-pandoc PSF_part2.md PSF_part3_v[N].md -o PSF_Application.docx \
-  --reference-doc=$HOME/.hermes/psf_template.docx
+pandoc /workspace/PSF_part2.md /workspace/PSF_part3_v[N].md \
+  -o /deliverables/PSF_Application.docx \
+  --reference-doc=/assets/psf_template.docx
 
-pandoc PSF_part2.md PSF_part3_v[N].md -o PSF_Application.pdf \
+pandoc /workspace/PSF_part2.md /workspace/PSF_part3_v[N].md \
+  -o /deliverables/PSF_Application.pdf \
   --pdf-engine=xelatex \
-  --include-in-header=$HOME/.hermes/thai_pdf.tex
+  --include-in-header=/assets/thai_pdf.tex
 ```
 
-(ถ้า Part 2 มี version ใหม่ด้วย ให้ใช้ `PSF_part2_v[N].md`)
+(ถ้า Part 2 มี version ใหม่ด้วย ให้ใช้ `/workspace/PSF_part2_v[N].md`)
 
-แจ้งอาจารย์: ไฟล์ `.md` ทุก version เก็บครบ / `PSF_Application.docx` สำหรับตรวจสอบ / `PSF_Application.pdf` สำหรับ submit
+แจ้งอาจารย์: ไฟล์ `.md` ทุก version เก็บครบใน `/workspace` / `/deliverables/PSF_Application.docx` สำหรับตรวจสอบ / `/deliverables/PSF_Application.pdf` สำหรับ submit
 
 ---
 
