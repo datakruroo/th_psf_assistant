@@ -11,7 +11,7 @@ else
 fi
 
 usage() {
-    printf 'Usage: psf-delete-profile [--yes] PSF-YYYY-NNN\n' >&2
+    printf 'Usage: psf-delete-profile [--yes] NAME | PSF-YYYY-NNN[_NAME]\n' >&2
 }
 
 YES=0
@@ -22,20 +22,19 @@ fi
 
 [ "$#" -eq 1 ] || { usage; exit 2; }
 
-CASE_ID="$1"
-psf_validate_case_id "$CASE_ID"
+CASE_REF="$1"
 psf_require_command hermes
 
-PROFILE="$(psf_profile_for_case "$CASE_ID")"
-CASE_DIR="$(psf_case_dir "$CASE_ID")"
-CANONICAL_CASE_ID="$(psf_canonical_case_id "$CASE_ID")"
+RESOLVED="$(psf_resolve_case_ref "$CASE_REF")"
+IFS=$'\t' read -r CANONICAL_CASE_ID CASE_DIR CASE_FOLDER_NAME <<< "$RESOLVED"
+PROFILE="$(psf_profile_for_case "$CANONICAL_CASE_ID")"
 
 if ! psf_profile_exists "$PROFILE"; then
     psf_err "Hermes profile does not exist: $PROFILE"
     exit 1
 fi
 
-printf 'This will delete the Hermes profile for %s (%s).\n' "$CANONICAL_CASE_ID" "$PROFILE"
+printf 'This will delete the Hermes profile for %s (%s, %s).\n' "$CASE_FOLDER_NAME" "$CANONICAL_CASE_ID" "$PROFILE"
 printf 'Conversation history, sessions, logs, and memory stored in that profile will be deleted.\n'
 printf 'Case files will NOT be deleted: %s\n' "$CASE_DIR"
 

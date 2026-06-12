@@ -12,6 +12,7 @@ export PSF_SHARED="$HERMES_HOME/psf-shared"
 export PSF_INSTALL_SKIP_SETUP=1
 export PSF_INSTALL_SKIP_DOCKER_BUILD=1
 export PSF_CASE_YEAR=2026
+export PSF_TEST_CHAT_LOG="$TMP_DIR/psf-chat.log"
 export PATH="$TMP_DIR/fakebin:$ROOT_DIR/bin:$PATH"
 
 mkdir -p "$TMP_DIR/fakebin" "$HOME" "$HERMES_HOME" "$PSF_SHARED/templates"
@@ -257,11 +258,24 @@ assert_dir "$PROFILE4"
 assert_contains "$CONFIG4" "$CASE4/input:/input:ro"
 assert_contains "$CONFIG4" "psf.case_id=PSF-2026-004"
 
+psf-open siwachoat >/tmp/psf-smoke-open.out
+grep -qxF "psf-2026-004" "$PSF_TEST_CHAT_LOG" || fail "psf-open by suffix did not open psf-2026-004"
+
+psf-new another_siwachoat >/tmp/psf-smoke-auto2.out
+CASE5="$PSF_ROOT/cases/PSF-2026-005_another_siwachoat"
+PROFILE5="$HERMES_HOME/profiles/psf-2026-005"
+assert_dir "$CASE5"
+assert_dir "$PROFILE5"
+expect_fail psf-open siwachoat
+psf-open another_siwachoat >/tmp/psf-smoke-open2.out
+tail -n 1 "$PSF_TEST_CHAT_LOG" | grep -qxF "psf-2026-005" || fail "psf-open exact-ish suffix did not open psf-2026-005"
+
 printf 'Somchai Example\n' >> "$CASE1/input/cv_background.md"
 LIST_OUT="$(psf-list)"
 printf '%s\n' "$LIST_OUT" | grep -q "PSF-2026-001" || fail "psf-list did not show case ID"
 printf '%s\n' "$LIST_OUT" | grep -q "psf_2026_003_somchai" || fail "psf-list did not show friendly folder name"
 printf '%s\n' "$LIST_OUT" | grep -q "PSF-2026-004_siwachoat" || fail "psf-list did not show auto-generated folder name"
+printf '%s\n' "$LIST_OUT" | grep -q "PSF-2026-005_another_siwachoat" || fail "psf-list did not show second auto-generated folder name"
 printf '%s\n' "$LIST_OUT" | grep -q "Somchai" && fail "psf-list leaked real-name content"
 
 PSF_FAKE_DOCKER_DOWN=1 expect_fail psf-open PSF-2026-001
