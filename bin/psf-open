@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+if [ -f "$SCRIPT_DIR/../lib/psf-lib.sh" ]; then
+    # shellcheck source=../lib/psf-lib.sh
+    source "$SCRIPT_DIR/../lib/psf-lib.sh"
+else
+    # shellcheck source=/dev/null
+    source "${PSF_LIB:-$HOME/.local/lib/psf-assistant/psf-lib.sh}"
+fi
+
+usage() {
+    printf 'Usage: psf-open PSF-YYYY-NNN\n' >&2
+}
+
+[ "$#" -eq 1 ] || { usage; exit 2; }
+
+CASE_ID="$1"
+psf_validate_case_id "$CASE_ID"
+psf_require_command hermes
+
+CASE_DIR="$(psf_case_dir "$CASE_ID")"
+PROFILE="$(psf_profile_for_case "$CASE_ID")"
+
+if [ ! -d "$CASE_DIR" ]; then
+    psf_err "case folder does not exist: $CASE_DIR"
+    exit 1
+fi
+
+if ! psf_profile_exists "$PROFILE"; then
+    psf_err "Hermes profile does not exist: $PROFILE"
+    exit 1
+fi
+
+psf_check_docker_ready
+
+cd "$CASE_DIR/workspace"
+exec hermes -p "$PROFILE" chat

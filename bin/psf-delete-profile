@@ -1,0 +1,52 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+if [ -f "$SCRIPT_DIR/../lib/psf-lib.sh" ]; then
+    # shellcheck source=../lib/psf-lib.sh
+    source "$SCRIPT_DIR/../lib/psf-lib.sh"
+else
+    # shellcheck source=/dev/null
+    source "${PSF_LIB:-$HOME/.local/lib/psf-assistant/psf-lib.sh}"
+fi
+
+usage() {
+    printf 'Usage: psf-delete-profile [--yes] PSF-YYYY-NNN\n' >&2
+}
+
+YES=0
+if [ "${1:-}" = "--yes" ]; then
+    YES=1
+    shift
+fi
+
+[ "$#" -eq 1 ] || { usage; exit 2; }
+
+CASE_ID="$1"
+psf_validate_case_id "$CASE_ID"
+psf_require_command hermes
+
+PROFILE="$(psf_profile_for_case "$CASE_ID")"
+CASE_DIR="$(psf_case_dir "$CASE_ID")"
+CANONICAL_CASE_ID="$(psf_canonical_case_id "$CASE_ID")"
+
+if ! psf_profile_exists "$PROFILE"; then
+    psf_err "Hermes profile does not exist: $PROFILE"
+    exit 1
+fi
+
+printf 'This will delete the Hermes profile for %s (%s).\n' "$CANONICAL_CASE_ID" "$PROFILE"
+printf 'Conversation history, sessions, logs, and memory stored in that profile will be deleted.\n'
+printf 'Case files will NOT be deleted: %s\n' "$CASE_DIR"
+
+if [ "$YES" -ne 1 ]; then
+    printf 'Type DELETE to continue: '
+    read -r answer
+    if [ "$answer" != "DELETE" ]; then
+        printf 'Cancelled.\n'
+        exit 1
+    fi
+fi
+
+hermes profile delete "$PROFILE" -y
+printf 'Deleted Hermes profile %s. Case folder was left untouched.\n' "$PROFILE"
